@@ -103,17 +103,17 @@
                             <i class="fas fa-music"></i>
                             Tên bài hát
                         </label>
-                        <input
-                            type="text"
-                            id="songName"
-                            name="songName"
-                            placeholder="VD: Yêu 5 - Dế Choắt"
-                            required
-                            autocomplete="off"
-                            list="songSuggestions"
-                        >
-                        <datalist id="songSuggestions"></datalist>
-                        <div class="suggestion-tags" id="suggestionTags"></div>
+                        <div class="autocomplete-input-wrapper">
+                            <input
+                                type="text"
+                                id="songName"
+                                name="songName"
+                                placeholder="VD: Yêu 5 - Dế Choắt"
+                                required
+                                autocomplete="off"
+                            >
+                            <div class="autocomplete-dropdown" id="songDropdown"></div>
+                        </div>
                     </div>
 
                     <div class="input-group autocomplete-wrapper">
@@ -121,12 +121,18 @@
                             <i class="fas fa-user-microphone"></i>
                             Người hát / Ca sĩ
                         </label>
-                        <input
-                            type="text"
-                            id="artist"
-                            name="artist"
-                            placeholder="VD: Dế Choắt"
-                            required
+                        <div class="autocomplete-input-wrapper">
+                            <input
+                                type="text"
+                                id="artist"
+                                name="artist"
+                                placeholder="VD: Dế Choắt"
+                                required
+                                autocomplete="off"
+                            >
+                            <div class="autocomplete-dropdown" id="artistDropdown"></div>
+                        </div>
+                    </div>
                             autocomplete="off"
                             list="artistSuggestions"
                         >

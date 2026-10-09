@@ -437,7 +437,7 @@ document.getElementById('email').addEventListener('input', function() {
 });
 
 // ============================================
-// 🎵 SONG SUGGESTIONS FEATURE
+// 🎵 SONG AUTOCOMPLETE FEATURE
 // ============================================
 
 // Popular songs database
@@ -496,167 +496,290 @@ const popularSongs = [
 
 // Popular artists
 const popularArtists = [
-    "Sơn Tùng M-TP",
-    "Hương Tràm",
-    "Bằng Kiều",
-    "Min",
-    "Mr Siro",
-    "Đông Nhi",
-    "Trung Quân Idol",
-    "Hồ Quang Hiếu",
-    "Lam Truong",
-    "Quang Lê",
-    "Ngọc Sơn",
-    "Hoa Vinh",
-    "Khắc Việt",
-    "DuongG",
-    "Vũ.",
-    "Hoàng Dũng",
-    "Willy",
-    "Tóc Tiên",
-    "Huy Cung",
-    "JustaTee",
-    "The Men",
-    "Bùi Anh Tuấn",
-    "Minh Vương M4U",
-    "Cao Thi Thuy Trang"
+    "Sơn Tùng M-TP", "Hương Tràm", "Bằng Kiều", "Min", "Mr Siro",
+    "Đông Nhi", "Trung Quân Idol", "Hồ Quang Hiếu", "Lam Truong",
+    "Quang Lê", "Ngọc Sơn", "Hoa Vinh", "Khắc Việt", "DuongG",
+    "Vũ.", "Hoàng Dũng", "Willy", "Tóc Tiên", "Huy Cung",
+    "JustaTee", "The Men", "Bùi Anh Tuấn", "Minh Vương M4U", "Cao Thi Thuy Trang",
+    "Dế Choắt", "Camila Cabello", "Ed Sheeran", "Wiz Khalifa", "Huy Cung"
 ];
 
-// Initialize suggestions
-function initSuggestions() {
-    // Populate datalist for song name
-    const songDatalist = document.getElementById('songSuggestions');
-    popularSongs.forEach(song => {
-        const option = document.createElement('option');
-        option.value = `${song.name} - ${song.artist}`;
-        songDatalist.appendChild(option);
-    });
+// Current selected index for keyboard navigation
+let songSelectedIndex = -1;
+let artistSelectedIndex = -1;
+let songResults = [];
+let artistResults = [];
 
-    // Populate datalist for artist
-    const artistDatalist = document.getElementById('artistSuggestions');
-    popularArtists.forEach(artist => {
-        const option = document.createElement('option');
-        option.value = artist;
-        artistDatalist.appendChild(option);
-    });
-
-    // Show suggestion tags
-    showSuggestionTags();
-
-    // Add input listeners
+// Initialize autocomplete
+function initAutocomplete() {
     const songInput = document.getElementById('songName');
     const artistInput = document.getElementById('artist');
+    const songDropdown = document.getElementById('songDropdown');
+    const artistDropdown = document.getElementById('artistDropdown');
 
-    songInput.addEventListener('input', debounce(function() {
-        updateSuggestionTags(this.value);
-    }, 300));
-
-    artistInput.addEventListener('input', debounce(function() {
-        updateArtistSuggestions(this.value);
-    }, 300));
-}
-
-// Show clickable suggestion tags
-function showSuggestionTags() {
-    const container = document.getElementById('suggestionTags');
-    if (!container) return;
-
-    let html = '<div class="suggestion-section-title"><i class="fas fa-fire"></i> Gợi ý bài hát hot</div>';
-    html += '<div class="suggestion-tags">';
-
-    // Show top 10 popular songs
-    popularSongs.slice(0, 10).forEach(song => {
-        html += `
-            <span class="suggestion-tag" onclick="selectSongSuggestion('${escapeHtml(song.name)}', '${escapeHtml(song.artist)}')">
-                <span class="tag-icon">🎵</span>
-                <span class="tag-name">${escapeHtml(song.name)}</span>
-            </span>
-        `;
+    // Song input handlers
+    songInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        if (query.length >= 1) {
+            showSongDropdown(query);
+        } else {
+            hideSongDropdown();
+        }
     });
 
-    html += '</div>';
-    container.innerHTML = html;
+    songInput.addEventListener('focus', function() {
+        const query = this.value.trim();
+        if (query.length >= 1) {
+            showSongDropdown(query);
+        } else {
+            // Show popular songs when focused
+            showSongDropdown('');
+        }
+    });
+
+    songInput.addEventListener('keydown', function(e) {
+        handleSongKeydown(e);
+    });
+
+    // Artist input handlers
+    artistInput.addEventListener('input', function() {
+        const query = this.value.trim();
+        if (query.length >= 1) {
+            showArtistDropdown(query);
+        } else {
+            hideArtistDropdown();
+        }
+    });
+
+    artistInput.addEventListener('focus', function() {
+        const query = this.value.trim();
+        if (query.length >= 1) {
+            showArtistDropdown(query);
+        } else {
+            showArtistDropdown('');
+        }
+    });
+
+    artistInput.addEventListener('keydown', function(e) {
+        handleArtistKeydown(e);
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.autocomplete-wrapper')) {
+            hideSongDropdown();
+            hideArtistDropdown();
+        }
+    });
 }
 
-// Update suggestion tags based on search
-function updateSuggestionTags(query) {
-    const container = document.getElementById('suggestionTags');
-    if (!container) return;
+// Show song dropdown with suggestions
+function showSongDropdown(query) {
+    const dropdown = document.getElementById('songDropdown');
+    let results;
 
-    if (query.length < 2) {
-        showSuggestionTags();
-        return;
+    if (query.length === 0) {
+        // Show popular songs
+        results = popularSongs.slice(0, 8);
+    } else {
+        // Filter songs by query
+        results = popularSongs.filter(song =>
+            song.name.toLowerCase().includes(query.toLowerCase()) ||
+            song.artist.toLowerCase().includes(query.toLowerCase())
+        ).slice(0, 8);
     }
 
-    const filtered = popularSongs.filter(song =>
-        song.name.toLowerCase().includes(query.toLowerCase()) ||
-        song.artist.toLowerCase().includes(query.toLowerCase())
-    ).slice(0, 8);
+    songResults = results;
+    songSelectedIndex = -1;
 
-    if (filtered.length === 0) {
-        container.innerHTML = '<div class="suggestion-section-title"><i class="fas fa-search"></i> Không tìm thấy bài hát phù hợp</div>';
-        return;
+    if (results.length === 0) {
+        dropdown.innerHTML = `
+            <div class="autocomplete-no-results">
+                <i class="fas fa-search"></i>
+                Không tìm thấy bài hát phù hợp
+            </div>
+        `;
+    } else {
+        dropdown.innerHTML = results.map((song, index) => `
+            <div class="autocomplete-item" data-index="${index}" data-song="${escapeHtml(song.name)}" data-artist="${escapeHtml(song.artist)}">
+                <span class="autocomplete-item-icon">🎵</span>
+                <div class="autocomplete-item-content">
+                    <div class="autocomplete-song">${highlightMatch(song.name, query)}</div>
+                    <div class="autocomplete-artist">${song.artist}</div>
+                </div>
+            </div>
+        `).join('');
+
+        // Add click handlers
+        dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const song = this.dataset.song;
+                const artist = this.dataset.artist;
+                selectSong(song, artist);
+            });
+        });
     }
 
-    let html = `<div class="suggestion-section-title"><i class="fas fa-search"></i> Kết quả tìm kiếm "${escapeHtml(query)}"</div>`;
-    html += '<div class="suggestion-tags">';
+    dropdown.classList.add('active');
+}
 
-    filtered.forEach(song => {
-        html += `
-            <span class="suggestion-tag" onclick="selectSongSuggestion('${escapeHtml(song.name)}', '${escapeHtml(song.artist)}')">
-                <span class="tag-icon">🎵</span>
-                <span class="tag-name">${escapeHtml(song.name)} - ${escapeHtml(song.artist)}</span>
-            </span>
+// Show artist dropdown
+function showArtistDropdown(query) {
+    const dropdown = document.getElementById('artistDropdown');
+    let results;
+
+    if (query.length === 0) {
+        results = popularArtists.slice(0, 8);
+    } else {
+        results = popularArtists.filter(artist =>
+            artist.toLowerCase().includes(query.toLowerCase())
+        ).slice(0, 8);
+    }
+
+    artistResults = results;
+    artistSelectedIndex = -1;
+
+    if (results.length === 0) {
+        dropdown.innerHTML = `
+            <div class="autocomplete-no-results">
+                <i class="fas fa-user"></i>
+                Không tìm thấy ca sĩ phù hợp
+            </div>
         `;
-    });
+    } else {
+        dropdown.innerHTML = results.map((artist, index) => `
+            <div class="autocomplete-item" data-index="${index}" data-artist="${escapeHtml(artist)}">
+                <span class="autocomplete-item-icon">🎤</span>
+                <div class="autocomplete-item-content">
+                    <div class="autocomplete-song">${highlightMatch(artist, query)}</div>
+                </div>
+            </div>
+        `).join('');
 
-    html += '</div>';
-    container.innerHTML = html;
+        dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+            item.addEventListener('click', function() {
+                selectArtist(this.dataset.artist);
+            });
+        });
+    }
+
+    dropdown.classList.add('active');
 }
 
-// Update artist suggestions
-function updateArtistSuggestions(query) {
-    if (query.length < 2) return;
+// Handle keyboard navigation for song input
+function handleSongKeydown(e) {
+    const dropdown = document.getElementById('songDropdown');
+    const items = dropdown.querySelectorAll('.autocomplete-item');
 
-    const filtered = popularArtists.filter(artist =>
-        artist.toLowerCase().includes(query.toLowerCase())
-    ).slice(0, 5);
+    if (!dropdown.classList.contains('active')) return;
 
-    // Update datalist
-    const artistDatalist = document.getElementById('artistSuggestions');
-    artistDatalist.innerHTML = '';
-    filtered.forEach(artist => {
-        const option = document.createElement('option');
-        option.value = artist;
-        artistDatalist.appendChild(option);
-    });
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        songSelectedIndex = Math.min(songSelectedIndex + 1, items.length - 1);
+        updateSongSelection(items);
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        songSelectedIndex = Math.max(songSelectedIndex - 1, -1);
+        updateSongSelection(items);
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (songSelectedIndex >= 0 && songResults[songSelectedIndex]) {
+            const song = songResults[songSelectedIndex];
+            selectSong(song.name, song.artist);
+        }
+    } else if (e.key === 'Escape') {
+        hideSongDropdown();
+    }
 }
 
-// Select a suggestion
-function selectSongSuggestion(songName, artistName) {
+// Handle keyboard navigation for artist input
+function handleArtistKeydown(e) {
+    const dropdown = document.getElementById('artistDropdown');
+    const items = dropdown.querySelectorAll('.autocomplete-item');
+
+    if (!dropdown.classList.contains('active')) return;
+
+    if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        artistSelectedIndex = Math.min(artistSelectedIndex + 1, items.length - 1);
+        updateArtistSelection(items);
+    } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        artistSelectedIndex = Math.max(artistSelectedIndex - 1, -1);
+        updateArtistSelection(items);
+    } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (artistSelectedIndex >= 0 && artistResults[artistSelectedIndex]) {
+            selectArtist(artistResults[artistSelectedIndex]);
+        }
+    } else if (e.key === 'Escape') {
+        hideArtistDropdown();
+    }
+}
+
+// Update song selection highlight
+function updateSongSelection(items) {
+    items.forEach((item, index) => {
+        item.classList.toggle('selected', index === songSelectedIndex);
+    });
+    if (songSelectedIndex >= 0 && items[songSelectedIndex]) {
+        items[songSelectedIndex].scrollIntoView({ block: 'nearest' });
+    }
+}
+
+// Update artist selection highlight
+function updateArtistSelection(items) {
+    items.forEach((item, index) => {
+        item.classList.toggle('selected', index === artistSelectedIndex);
+    });
+    if (artistSelectedIndex >= 0 && items[artistSelectedIndex]) {
+        items[artistSelectedIndex].scrollIntoView({ block: 'nearest' });
+    }
+}
+
+// Select a song from dropdown
+function selectSong(songName, artistName) {
     document.getElementById('songName').value = songName;
     document.getElementById('artist').value = artistName;
-
-    // Trigger input event to update suggestions
-    document.getElementById('songName').dispatchEvent(new Event('input'));
+    hideSongDropdown();
+    // Focus artist input next
+    document.getElementById('artist').focus();
 }
 
-// Debounce utility
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
+// Select an artist from dropdown
+function selectArtist(artistName) {
+    document.getElementById('artist').value = artistName;
+    hideArtistDropdown();
+}
+
+// Hide dropdowns
+function hideSongDropdown() {
+    const dropdown = document.getElementById('songDropdown');
+    dropdown.classList.remove('active');
+    songSelectedIndex = -1;
+}
+
+function hideArtistDropdown() {
+    const dropdown = document.getElementById('artistDropdown');
+    dropdown.classList.remove('active');
+    artistSelectedIndex = -1;
+}
+
+// Highlight matching text
+function highlightMatch(text, query) {
+    if (!query) return escapeHtml(text);
+    const regex = new RegExp(`(${escapeRegex(query)})`, 'gi');
+    return escapeHtml(text).replace(regex, '<span class="autocomplete-item-highlight">$1</span>');
+}
+
+// Escape regex special characters
+function escapeRegex(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', function() {
     createParticles();
     loadStats();
-    initSuggestions();
+    initAutocomplete();
 });

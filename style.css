@@ -573,6 +573,111 @@ body {
     gap: 6px;
 }
 
+/* Autocomplete Dropdown */
+.autocomplete-input-wrapper {
+    position: relative;
+}
+
+.autocomplete-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-card);
+    border: 2px solid var(--primary-light);
+    border-top: none;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    max-height: 250px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+}
+
+.autocomplete-dropdown.active {
+    display: block;
+    animation: dropdownSlide 0.2s ease;
+}
+
+@keyframes dropdownSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.autocomplete-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.autocomplete-item:last-child {
+    border-bottom: none;
+}
+
+.autocomplete-item:hover,
+.autocomplete-item.selected {
+    background: var(--primary);
+    color: white;
+}
+
+.autocomplete-item:hover .autocomplete-artist,
+.autocomplete-item.selected .autocomplete-artist {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.autocomplete-item-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.autocomplete-item-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.autocomplete-song {
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.autocomplete-artist {
+    font-size: 13px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.autocomplete-item-highlight {
+    background: rgba(124, 58, 237, 0.15);
+    border-radius: 4px;
+    padding: 0 2px;
+}
+
+.autocomplete-no-results {
+    padding: 20px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.autocomplete-no-results i {
+    font-size: 24px;
+    margin-bottom: 8px;
+    display: block;
+}
+
 /* Submit Button */
 .submit-btn {
     width: 100%;
