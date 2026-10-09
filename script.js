@@ -19,7 +19,7 @@
 // ============================================
 // ⚙️ CẤU HÌNH - THAY ĐỔI URL NÀY
 // ============================================
-const APP_SCRIPT_URL = 'https://docs.google.com/spreadsheets/d/1be2x0xbWOhOQ3avLgE8hHZzEZvqNeJ7j0f52NHfmZFI/edit?gid=0#gid=0';
+const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzTwPiz6hXXR-p5uyd3DQfQJNGKYFQpj88YQ1XgcSMFANd9c3rE2tCvniiPjfl0lZmRKA/exec';
 
 // ============================================
 // 📌 HƯỚNG DẪN TẠO GOOGLE APPS SCRIPT
