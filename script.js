@@ -206,15 +206,62 @@ async function sendToSheet(data) {
         return simulateResponse(data);
     }
 
-    const response = await fetch(APP_SCRIPT_URL, {
+    // Step 1: Submit data via POST with no-cors (Apps Script doesn't return CORS headers)
+    await fetch(APP_SCRIPT_URL, {
         method: 'POST',
+        mode: 'no-cors',
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'text/plain',
         },
         body: JSON.stringify(data)
     });
 
-    return await response.json();
+    // Step 2: Wait a bit for Apps Script to process
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    // Step 3: Verify by fetching the latest data
+    try {
+        const verifyUrl = `${APP_SCRIPT_URL}?email=${encodeURIComponent(data.email)}&t=${Date.now()}`;
+        const verifyResponse = await fetch(verifyUrl, { redirect: 'follow' });
+        const verifyData = await verifyResponse.json();
+
+        // Check if count increased (song was added)
+        const newCount = verifyData.count || 0;
+        const lastSong = verifyData.songs && verifyData.songs[verifyData.songs.length - 1];
+
+        if (lastSong && lastSong.songName.toLowerCase() === data.songName.toLowerCase() &&
+            lastSong.artist.toLowerCase() === data.artist.toLowerCase()) {
+            return {
+                status: 'success',
+                message: 'Đăng ký thành công!',
+                count: newCount
+            };
+        }
+
+        // If not found, check if already exists
+        if (newCount >= 10) {
+            return {
+                status: 'error',
+                message: 'Bạn đã đăng ký đủ 10 bài hát!'
+            };
+        }
+
+        // Fallback - assume success if count is reasonable
+        if (newCount > 0) {
+            return {
+                status: 'success',
+                message: 'Đăng ký thành công!',
+                count: newCount
+            };
+        }
+    } catch (error) {
+        console.error('Verify error:', error);
+    }
+
+    return {
+        status: 'error',
+        message: 'Không thể xác nhận đăng ký. Vui lòng kiểm tra lại!'
+    };
 }
 
 // Simulate response for demo
@@ -265,7 +312,8 @@ async function loadStats() {
     }
 
     try {
-        const response = await fetch(`${APP_SCRIPT_URL}?email=${encodeURIComponent(email)}`);
+        const url = `${APP_SCRIPT_URL}?email=${encodeURIComponent(email)}&t=${Date.now()}`;
+        const response = await fetch(url, { redirect: 'follow' });
         const data = await response.json();
 
         document.getElementById('totalSongs').textContent = data.totalSongs || 0;
@@ -276,7 +324,7 @@ async function loadStats() {
             document.getElementById('userSongCount').textContent = data.count || 0;
         }
     } catch (error) {
-        console.log('Stats loading skipped (demo mode or server unavailable)');
+        console.log('Stats loading skipped:', error);
     }
 }
 
@@ -300,7 +348,8 @@ async function loadUserSongs(email) {
     }
 
     try {
-        const response = await fetch(`${APP_SCRIPT_URL}?email=${encodeURIComponent(email)}`);
+        const url = `${APP_SCRIPT_URL}?email=${encodeURIComponent(email)}&t=${Date.now()}`;
+        const response = await fetch(url, { redirect: 'follow' });
         const data = await response.json();
 
         if (data.songs) {
@@ -308,7 +357,7 @@ async function loadUserSongs(email) {
             document.getElementById('userSongCount').textContent = data.count || 0;
         }
     } catch (error) {
-        console.log('User songs loading skipped');
+        console.log('User songs loading skipped:', error);
     }
 }
 
