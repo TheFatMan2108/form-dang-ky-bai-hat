@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oder Bài Hát</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Background particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <span class="logo-icon">🎵</span>
+                <span class="logo-text">Oder Bài Hát</span>
+            </div>
+            <div class="xp-badge">
+                <i class="fas fa-music"></i>
+                <span>Karaoke Night</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-microphone"></i>
+                <span>Level Up Your Song List</span>
+            </div>
+            <h1 class="hero-title">
+                <span class="gradient-text">Đăng Ký</span>
+                <br>Bài Hát Yêu Thích
+            </h1>
+            <p class="hero-desc">
+                Mỗi tài khoản được đăng ký tối đa <strong>10 bài hát</strong>
+                <br>Hãy chọn những bài hát hay nhất để thể hiện tài năng!
+            </p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-icon">🎤</span>
+                    <span class="stat-number" id="totalSongs">0</span>
+                    <span class="stat-label">Bài đã đăng ký</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">👥</span>
+                    <span class="stat-number" id="totalUsers">0</span>
+                    <span class="stat-label">Người tham gia</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">🎵</span>
+                    <span class="stat-number">10</span>
+                    <span class="stat-label">Bài/người</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-decoration">
+            <div class="floating-note note-1">♪</div>
+            <div class="floating-note note-2">♫</div>
+            <div class="floating-note note-3">♬</div>
+        </div>
+    </section>
+
+    <!-- Form Section -->
+    <section class="form-section">
+        <div class="container">
+            <div class="form-card">
+                <div class="card-header">
+                    <div class="card-icon">
+                        <i class="fas fa-scroll"></i>
+                    </div>
+                    <h2>Đơn Đăng Ký Bài Hát</h2>
+                    <div class="song-count-display">
+                        <span>Bạn đã đăng ký: </span>
+                        <span class="count-number" id="userSongCount">0</span>
+                        <span>/10 bài</span>
+                    </div>
+                </div>
+
+                <form id="songForm" class="song-form">
+                    <div class="input-group">
+                        <label for="email">
+                            <i class="fas fa-envelope"></i>
+                            Email của bạn
+                        </label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Nhập email của bạn..."
+                            required
+                        >
+                        <span class="input-hint">Dùng email để track số bài đã đăng ký</span>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="songName">
+                            <i class="fas fa-music"></i>
+                            Tên bài hát
+                        </label>
+                        <input
+                            type="text"
+                            id="songName"
+                            name="songName"
+                            placeholder="VD: Yêu 5 - Dế Choắt"
+                            required
+                        >
+                    </div>
+
+                    <div class="input-group">
+                        <label for="artist">
+                            <i class="fas fa-user-microphone"></i>
+                            Người hát / Ca sĩ
+                        </label>
+                        <input
+                            type="text"
+                            id="artist"
+                            name="artist"
+                            placeholder="VD: Dế Choắt"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <span class="btn-text">
+                            <i class="fas fa-plus-circle"></i>
+                            Thêm Bài Hát
+                        </span>
+                        <span class="btn-loading">
+                            <i class="fas fa-spinner fa-spin"></i>
+                            Đang xử lý...
+                        </span>
+                    </button>
+                </form>
+
+                <!-- Message Display -->
+                <div class="message-container" id="messageContainer">
+                    <div class="message success" id="successMessage">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Đăng ký thành công!</span>
+                    </div>
+                    <div class="message error" id="errorMessage">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="errorText">Có lỗi xảy ra!</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User's Songs List -->
+            <div class="my-songs-card" id="mySongsCard" style="display: none;">
+                <div class="card-header">
+                    <div class="card-icon purple">
+                        <i class="fas fa-list"></i>
+                    </div>
+                    <h2>Bài Hát Của Bạn</h2>
+                </div>
+                <div class="songs-list" id="mySongsList">
+                    <!-- Songs will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <h2 class="section-title">
+                <i class="fas fa-star"></i>
+                Quy Tắc Đăng Ký
+            </h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📧</div>
+                    <h3>1 Tài Khoản = 1 Email</h3>
+                    <p>Mỗi email được đăng ký tối đa 10 bài hát</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎵</div>
+                    <h3>Chọn Bài Yêu Thích</h3>
+                    <p>Đăng ký bất kỳ bài hát nào bạn muốn hát</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Đăng Ký Nhanh</h3>
+                    <p>Chỉ cần điền form và gửi là xong!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <span class="logo-icon">🎵</span>
+                    <span>Oder Bài Hát</span>
+                </div>
+                <p class="footer-text">
+                    Made with <span class="heart">❤️</span> for Karaoke Night
+                </p>
+                <div class="footer-note">
+                    <i class="fas fa-info-circle"></i>
+                    Data được lưu vào Google Sheet
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
