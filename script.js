@@ -133,14 +133,6 @@ function doGet(e) {
 // 🚀 LOGIC XỬ LÝ
 // ============================================
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Create particles
-    createParticles();
-
-    // Load initial data
-    loadStats();
-});
-
 // Form submission
 document.getElementById('songForm').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -442,4 +434,229 @@ document.getElementById('email').addEventListener('input', function() {
             loadUserSongs(email);
         }
     }, 500);
+});
+
+// ============================================
+// 🎵 SONG SUGGESTIONS FEATURE
+// ============================================
+
+// Popular songs database
+const popularSongs = [
+    { name: "Yêu 5", artist: "Dế Choắt" },
+    { name: "Havana", artist: "Camila Cabello" },
+    { name: "Shape of You", artist: "Ed Sheeran" },
+    { name: "Despacito", artist: "Luis Fonsi" },
+    { name: "See You Again", artist: "Wiz Khalifa" },
+    { name: "Chạy Ngay Đi", artist: "Sơn Tùng M-TP" },
+    { name: "Buông Đôi Tay Nhau Ra", artist: "Mr Siro" },
+    { name: "Nơi Này Có Anh", artist: "Sơn Tùng M-TP" },
+    { name: "Mây Lang Thang", artist: "Hồ Quang Hiếu" },
+    { name: "Em Của Ngày Hôm Qua", artist: "Sơn Tùng M-TP" },
+    { name: "Muộn Rồi Mà Sao Còn", artist: "Sơn Tùng M-TP" },
+    { name: "Có Chắc Yêu Là Đây", artist: "Sơn Tùng M-TP" },
+    { name: "Lạc Trôi", artist: "Sơn Tùng M-TP" },
+    { name: "Nàng Thơ", artist: "Hoàng Dũng" },
+    { name: "Sau Lưng Anh Có Ai", artist: "Trung Quân Idol" },
+    { name: "Bước Qua Nhau", artist: "Vũ." },
+    { name: "Hãy Trao Cho Anh", artist: "Sơn Tùng M-TP ft. Snoop Dogg" },
+    { name: "Đừng Như Thường", artist: "Trung Quân Idol" },
+    { name: "Vì Yêu Cứ Đâm Đầu", artist: "Min" },
+    { name: "Giả Vờ Nhé", artist: "Bùi Anh Tuấn" },
+    { name: "Mình Từng Yêu", artist: "Minh Vương M4U" },
+    { name: "Ghen", artist: "Min x Karik x Châu Khải Phong" },
+    { name: "Đừng Hẹn Kiếp Sau", artist: "Khắc Việt" },
+    { name: "Cánh Hoa Tàn", artist: "Lam Truong" },
+    { name: "Thiên Đường", artist: "Hoa Vinh" },
+    { name: "Túp Lều Vàng", artist: "Ngọc Sơn" },
+    { name: "Không Phai", artist: "Cao Thi Thuy Trang" },
+    { name: "Yêu Là Tha Thu", artist: "Em Chưa 18" },
+    { name: "3107", artist: "DuongG" },
+    { name: "Tình Yêu Diệu Vời", artist: "Đông Nhi" },
+    { name: "Xin Đừng Im Lặng", artist: "Bùi Anh Tuấn" },
+    { name: "Hơn Cả Yêu", artist: "Đông Nhi" },
+    { name: "Để Cho Em Khóc", artist: "Minh Vương M4U" },
+    { name: "Sao Anh Chưa Về", artist: "Bằng Kiều ft. Hương Tràm" },
+    { name: "Người Yêu Tôi Lạnh Lùng", artist: "The Men" },
+    { name: "Phai Dấu Cuộc Tình", artist: "Đông Nhi" },
+    { name: "Nếu Em Còn Tồn Tại", artist: "Trung Quân Idol" },
+    { name: "Bán Duyên", artist: "Minh Vương M4U" },
+    { name: "Anh Khác Hay Em Khác", artist: "Hồ Quang Hiếu" },
+    { name: "Cần Lắm", artist: "Bằng Kiều" },
+    { name: "Tình Đơn Phương", artist: "JustaTee" },
+    { name: "Rời Bỏ", artist: "Hương Tràm" },
+    { name: "Điều Khác Lạ", artist: "The Men" },
+    { name: "Mây Ơi", artist: "Quang Lê" },
+    { name: "Nỗi Nhớ Gợi Mây", artist: "Đình Dũng" },
+    { name: "Cố Cái Duyên", artist: "Ngọc Sơn" },
+    { name: "Thành Phố Mưa", artist: "Huy Cung" },
+    { name: "Đừng Nói Xin Lỗi", artist: "Hồ Quang Hiếu" },
+    { name: "Tâm Sự Tuổi 30", artist: "Trung Quân Idol" },
+    { name: "Kẹo Bông Gòn", artist: "Hương Tràm" }
+];
+
+// Popular artists
+const popularArtists = [
+    "Sơn Tùng M-TP",
+    "Hương Tràm",
+    "Bằng Kiều",
+    "Min",
+    "Mr Siro",
+    "Đông Nhi",
+    "Trung Quân Idol",
+    "Hồ Quang Hiếu",
+    "Lam Truong",
+    "Quang Lê",
+    "Ngọc Sơn",
+    "Hoa Vinh",
+    "Khắc Việt",
+    "DuongG",
+    "Vũ.",
+    "Hoàng Dũng",
+    "Willy",
+    "Tóc Tiên",
+    "Huy Cung",
+    "JustaTee",
+    "The Men",
+    "Bùi Anh Tuấn",
+    "Minh Vương M4U",
+    "Cao Thi Thuy Trang"
+];
+
+// Initialize suggestions
+function initSuggestions() {
+    // Populate datalist for song name
+    const songDatalist = document.getElementById('songSuggestions');
+    popularSongs.forEach(song => {
+        const option = document.createElement('option');
+        option.value = `${song.name} - ${song.artist}`;
+        songDatalist.appendChild(option);
+    });
+
+    // Populate datalist for artist
+    const artistDatalist = document.getElementById('artistSuggestions');
+    popularArtists.forEach(artist => {
+        const option = document.createElement('option');
+        option.value = artist;
+        artistDatalist.appendChild(option);
+    });
+
+    // Show suggestion tags
+    showSuggestionTags();
+
+    // Add input listeners
+    const songInput = document.getElementById('songName');
+    const artistInput = document.getElementById('artist');
+
+    songInput.addEventListener('input', debounce(function() {
+        updateSuggestionTags(this.value);
+    }, 300));
+
+    artistInput.addEventListener('input', debounce(function() {
+        updateArtistSuggestions(this.value);
+    }, 300));
+}
+
+// Show clickable suggestion tags
+function showSuggestionTags() {
+    const container = document.getElementById('suggestionTags');
+    if (!container) return;
+
+    let html = '<div class="suggestion-section-title"><i class="fas fa-fire"></i> Gợi ý bài hát hot</div>';
+    html += '<div class="suggestion-tags">';
+
+    // Show top 10 popular songs
+    popularSongs.slice(0, 10).forEach(song => {
+        html += `
+            <span class="suggestion-tag" onclick="selectSongSuggestion('${escapeHtml(song.name)}', '${escapeHtml(song.artist)}')">
+                <span class="tag-icon">🎵</span>
+                <span class="tag-name">${escapeHtml(song.name)}</span>
+            </span>
+        `;
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+// Update suggestion tags based on search
+function updateSuggestionTags(query) {
+    const container = document.getElementById('suggestionTags');
+    if (!container) return;
+
+    if (query.length < 2) {
+        showSuggestionTags();
+        return;
+    }
+
+    const filtered = popularSongs.filter(song =>
+        song.name.toLowerCase().includes(query.toLowerCase()) ||
+        song.artist.toLowerCase().includes(query.toLowerCase())
+    ).slice(0, 8);
+
+    if (filtered.length === 0) {
+        container.innerHTML = '<div class="suggestion-section-title"><i class="fas fa-search"></i> Không tìm thấy bài hát phù hợp</div>';
+        return;
+    }
+
+    let html = `<div class="suggestion-section-title"><i class="fas fa-search"></i> Kết quả tìm kiếm "${escapeHtml(query)}"</div>`;
+    html += '<div class="suggestion-tags">';
+
+    filtered.forEach(song => {
+        html += `
+            <span class="suggestion-tag" onclick="selectSongSuggestion('${escapeHtml(song.name)}', '${escapeHtml(song.artist)}')">
+                <span class="tag-icon">🎵</span>
+                <span class="tag-name">${escapeHtml(song.name)} - ${escapeHtml(song.artist)}</span>
+            </span>
+        `;
+    });
+
+    html += '</div>';
+    container.innerHTML = html;
+}
+
+// Update artist suggestions
+function updateArtistSuggestions(query) {
+    if (query.length < 2) return;
+
+    const filtered = popularArtists.filter(artist =>
+        artist.toLowerCase().includes(query.toLowerCase())
+    ).slice(0, 5);
+
+    // Update datalist
+    const artistDatalist = document.getElementById('artistSuggestions');
+    artistDatalist.innerHTML = '';
+    filtered.forEach(artist => {
+        const option = document.createElement('option');
+        option.value = artist;
+        artistDatalist.appendChild(option);
+    });
+}
+
+// Select a suggestion
+function selectSongSuggestion(songName, artistName) {
+    document.getElementById('songName').value = songName;
+    document.getElementById('artist').value = artistName;
+
+    // Trigger input event to update suggestions
+    document.getElementById('songName').dispatchEvent(new Event('input'));
+}
+
+// Debounce utility
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Initialize on DOM ready
+document.addEventListener('DOMContentLoaded', function() {
+    createParticles();
+    loadStats();
+    initSuggestions();
 });

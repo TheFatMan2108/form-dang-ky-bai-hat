@@ -98,7 +98,7 @@
                         <span class="input-hint">Dùng email để track số bài đã đăng ký</span>
                     </div>
 
-                    <div class="input-group">
+                    <div class="input-group autocomplete-wrapper">
                         <label for="songName">
                             <i class="fas fa-music"></i>
                             Tên bài hát
@@ -109,10 +109,14 @@
                             name="songName"
                             placeholder="VD: Yêu 5 - Dế Choắt"
                             required
+                            autocomplete="off"
+                            list="songSuggestions"
                         >
+                        <datalist id="songSuggestions"></datalist>
+                        <div class="suggestion-tags" id="suggestionTags"></div>
                     </div>
 
-                    <div class="input-group">
+                    <div class="input-group autocomplete-wrapper">
                         <label for="artist">
                             <i class="fas fa-user-microphone"></i>
                             Người hát / Ca sĩ
@@ -123,7 +127,10 @@
                             name="artist"
                             placeholder="VD: Dế Choắt"
                             required
+                            autocomplete="off"
+                            list="artistSuggestions"
                         >
+                        <datalist id="artistSuggestions"></datalist>
                     </div>
 
                     <button type="submit" class="submit-btn" id="submitBtn">
