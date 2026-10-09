@@ -101,42 +101,40 @@
                     <div class="input-group autocomplete-wrapper">
                         <label for="songName">
                             <i class="fas fa-music"></i>
-                            Tên bài hát
+                            Tên bài hát + Ca sĩ
                         </label>
                         <div class="autocomplete-input-wrapper">
                             <input
                                 type="text"
                                 id="songName"
                                 name="songName"
-                                placeholder="VD: Yêu 5 - Dế Choắt"
+                                placeholder="VD: Yêu 5 Dế Choắt"
                                 required
                                 autocomplete="off"
                             >
-                            <div class="autocomplete-dropdown" id="songDropdown"></div>
+                            <div class="autocomplete-dropdown youtube-search-dropdown" id="songDropdown">
+                                <div class="youtube-search-hint">
+                                    <i class="fab fa-youtube"></i> Đang tìm kiếm YouTube...
+                                </div>
+                            </div>
                         </div>
+                        <span class="input-hint youtube-hint">
+                            <i class="fab fa-youtube"></i> Tìm kiếm video từ YouTube
+                        </span>
                     </div>
 
-                    <div class="input-group autocomplete-wrapper">
+                    <div class="input-group">
                         <label for="artist">
                             <i class="fas fa-user-microphone"></i>
                             Người hát / Ca sĩ
                         </label>
-                        <div class="autocomplete-input-wrapper">
-                            <input
-                                type="text"
-                                id="artist"
-                                name="artist"
-                                placeholder="VD: Dế Choắt"
-                                required
-                                autocomplete="off"
-                            >
-                            <div class="autocomplete-dropdown" id="artistDropdown"></div>
-                        </div>
-                    </div>
-                            autocomplete="off"
-                            list="artistSuggestions"
+                        <input
+                            type="text"
+                            id="artist"
+                            name="artist"
+                            placeholder="VD: Dế Choắt"
+                            required
                         >
-                        <datalist id="artistSuggestions"></datalist>
                     </div>
 
                     <button type="submit" class="submit-btn" id="submitBtn">

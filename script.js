@@ -437,185 +437,140 @@ document.getElementById('email').addEventListener('input', function() {
 });
 
 // ============================================
-// 🎵 SONG AUTOCOMPLETE FEATURE
+// 🎵 YOUTUBE SEARCH FEATURE
 // ============================================
 
-// Popular songs database
-const popularSongs = [
-    { name: "Yêu 5", artist: "Dế Choắt" },
-    { name: "Havana", artist: "Camila Cabello" },
-    { name: "Shape of You", artist: "Ed Sheeran" },
-    { name: "Despacito", artist: "Luis Fonsi" },
-    { name: "See You Again", artist: "Wiz Khalifa" },
-    { name: "Chạy Ngay Đi", artist: "Sơn Tùng M-TP" },
-    { name: "Buông Đôi Tay Nhau Ra", artist: "Mr Siro" },
-    { name: "Nơi Này Có Anh", artist: "Sơn Tùng M-TP" },
-    { name: "Mây Lang Thang", artist: "Hồ Quang Hiếu" },
-    { name: "Em Của Ngày Hôm Qua", artist: "Sơn Tùng M-TP" },
-    { name: "Muộn Rồi Mà Sao Còn", artist: "Sơn Tùng M-TP" },
-    { name: "Có Chắc Yêu Là Đây", artist: "Sơn Tùng M-TP" },
-    { name: "Lạc Trôi", artist: "Sơn Tùng M-TP" },
-    { name: "Nàng Thơ", artist: "Hoàng Dũng" },
-    { name: "Sau Lưng Anh Có Ai", artist: "Trung Quân Idol" },
-    { name: "Bước Qua Nhau", artist: "Vũ." },
-    { name: "Hãy Trao Cho Anh", artist: "Sơn Tùng M-TP ft. Snoop Dogg" },
-    { name: "Đừng Như Thường", artist: "Trung Quân Idol" },
-    { name: "Vì Yêu Cứ Đâm Đầu", artist: "Min" },
-    { name: "Giả Vờ Nhé", artist: "Bùi Anh Tuấn" },
-    { name: "Mình Từng Yêu", artist: "Minh Vương M4U" },
-    { name: "Ghen", artist: "Min x Karik x Châu Khải Phong" },
-    { name: "Đừng Hẹn Kiếp Sau", artist: "Khắc Việt" },
-    { name: "Cánh Hoa Tàn", artist: "Lam Truong" },
-    { name: "Thiên Đường", artist: "Hoa Vinh" },
-    { name: "Túp Lều Vàng", artist: "Ngọc Sơn" },
-    { name: "Không Phai", artist: "Cao Thi Thuy Trang" },
-    { name: "Yêu Là Tha Thu", artist: "Em Chưa 18" },
-    { name: "3107", artist: "DuongG" },
-    { name: "Tình Yêu Diệu Vời", artist: "Đông Nhi" },
-    { name: "Xin Đừng Im Lặng", artist: "Bùi Anh Tuấn" },
-    { name: "Hơn Cả Yêu", artist: "Đông Nhi" },
-    { name: "Để Cho Em Khóc", artist: "Minh Vương M4U" },
-    { name: "Sao Anh Chưa Về", artist: "Bằng Kiều ft. Hương Tràm" },
-    { name: "Người Yêu Tôi Lạnh Lùng", artist: "The Men" },
-    { name: "Phai Dấu Cuộc Tình", artist: "Đông Nhi" },
-    { name: "Nếu Em Còn Tồn Tại", artist: "Trung Quân Idol" },
-    { name: "Bán Duyên", artist: "Minh Vương M4U" },
-    { name: "Anh Khác Hay Em Khác", artist: "Hồ Quang Hiếu" },
-    { name: "Cần Lắm", artist: "Bằng Kiều" },
-    { name: "Tình Đơn Phương", artist: "JustaTee" },
-    { name: "Rời Bỏ", artist: "Hương Tràm" },
-    { name: "Điều Khác Lạ", artist: "The Men" },
-    { name: "Mây Ơi", artist: "Quang Lê" },
-    { name: "Nỗi Nhớ Gợi Mây", artist: "Đình Dũng" },
-    { name: "Cố Cái Duyên", artist: "Ngọc Sơn" },
-    { name: "Thành Phố Mưa", artist: "Huy Cung" },
-    { name: "Đừng Nói Xin Lỗi", artist: "Hồ Quang Hiếu" },
-    { name: "Tâm Sự Tuổi 30", artist: "Trung Quân Idol" },
-    { name: "Kẹo Bông Gòn", artist: "Hương Tràm" }
-];
+// YouTube search state
+let youtubeSearchTimeout;
+let youtubeResults = [];
+let youtubeSelectedIndex = -1;
+let isSearching = false;
 
-// Popular artists
-const popularArtists = [
-    "Sơn Tùng M-TP", "Hương Tràm", "Bằng Kiều", "Min", "Mr Siro",
-    "Đông Nhi", "Trung Quân Idol", "Hồ Quang Hiếu", "Lam Truong",
-    "Quang Lê", "Ngọc Sơn", "Hoa Vinh", "Khắc Việt", "DuongG",
-    "Vũ.", "Hoàng Dũng", "Willy", "Tóc Tiên", "Huy Cung",
-    "JustaTee", "The Men", "Bùi Anh Tuấn", "Minh Vương M4U", "Cao Thi Thuy Trang",
-    "Dế Choắt", "Camila Cabello", "Ed Sheeran", "Wiz Khalifa", "Huy Cung"
-];
+// YouTube API (using Invidious instance - free, no API key needed)
+const YOUTUBE_API_BASE = 'https://inv.nadeko.net/api/v1';
 
-// Current selected index for keyboard navigation
-let songSelectedIndex = -1;
-let artistSelectedIndex = -1;
-let songResults = [];
-let artistResults = [];
-
-// Initialize autocomplete
-function initAutocomplete() {
+// Initialize YouTube search
+function initYouTubeSearch() {
     const songInput = document.getElementById('songName');
-    const artistInput = document.getElementById('artist');
-    const songDropdown = document.getElementById('songDropdown');
-    const artistDropdown = document.getElementById('artistDropdown');
+    const dropdown = document.getElementById('songDropdown');
 
-    // Song input handlers
+    // Input handler with debounce
     songInput.addEventListener('input', function() {
         const query = this.value.trim();
-        if (query.length >= 1) {
-            showSongDropdown(query);
-        } else {
+
+        clearTimeout(youtubeSearchTimeout);
+
+        if (query.length < 2) {
             hideSongDropdown();
+            return;
         }
+
+        // Show loading state
+        showLoadingState();
+
+        // Debounce search
+        youtubeSearchTimeout = setTimeout(() => {
+            searchYouTube(query);
+        }, 400);
     });
 
+    // Focus handler
     songInput.addEventListener('focus', function() {
         const query = this.value.trim();
-        if (query.length >= 1) {
-            showSongDropdown(query);
-        } else {
-            // Show popular songs when focused
-            showSongDropdown('');
+        if (query.length >= 2) {
+            showLoadingState();
+            searchYouTube(query);
         }
     });
 
-    songInput.addEventListener('keydown', function(e) {
-        handleSongKeydown(e);
-    });
+    // Keyboard navigation
+    songInput.addEventListener('keydown', handleYouTubeKeydown);
 
-    // Artist input handlers
-    artistInput.addEventListener('input', function() {
-        const query = this.value.trim();
-        if (query.length >= 1) {
-            showArtistDropdown(query);
-        } else {
-            hideArtistDropdown();
-        }
-    });
-
-    artistInput.addEventListener('focus', function() {
-        const query = this.value.trim();
-        if (query.length >= 1) {
-            showArtistDropdown(query);
-        } else {
-            showArtistDropdown('');
-        }
-    });
-
-    artistInput.addEventListener('keydown', function(e) {
-        handleArtistKeydown(e);
-    });
-
-    // Close dropdowns when clicking outside
+    // Close dropdown when clicking outside
     document.addEventListener('click', function(e) {
         if (!e.target.closest('.autocomplete-wrapper')) {
             hideSongDropdown();
-            hideArtistDropdown();
         }
     });
 }
 
-// Show song dropdown with suggestions
-function showSongDropdown(query) {
+// Show loading state in dropdown
+function showLoadingState() {
     const dropdown = document.getElementById('songDropdown');
-    let results;
+    dropdown.innerHTML = `
+        <div class="youtube-loading">
+            <i class="fab fa-youtube"></i>
+            <span>Đang tìm kiếm YouTube...</span>
+        </div>
+    `;
+    dropdown.classList.add('active');
+}
 
-    if (query.length === 0) {
-        // Show popular songs
-        results = popularSongs.slice(0, 8);
-    } else {
-        // Filter songs by query
-        results = popularSongs.filter(song =>
-            song.name.toLowerCase().includes(query.toLowerCase()) ||
-            song.artist.toLowerCase().includes(query.toLowerCase())
-        ).slice(0, 8);
+// Search YouTube for videos
+async function searchYouTube(query) {
+    if (isSearching) return;
+    isSearching = true;
+
+    try {
+        // Using Invidious API - free YouTube alternative
+        const response = await fetch(`${YOUTUBE_API_BASE}/search?q=${encodeURIComponent(query)}&type=video&limit=8`);
+
+        if (!response.ok) {
+            throw new Error('Search failed');
+        }
+
+        const data = await response.json();
+
+        // Transform data
+        youtubeResults = data.map(item => ({
+            videoId: item.videoId,
+            title: item.title,
+            author: item.author,
+            duration: formatDuration(item.duration),
+            thumbnail: `https://i.ytimg.com/vi/${item.videoId}/mqdefault.jpg`
+        }));
+
+        displayYouTubeResults(query);
+
+    } catch (error) {
+        console.error('YouTube search error:', error);
+        showSearchError();
+    } finally {
+        isSearching = false;
     }
+}
 
-    songResults = results;
-    songSelectedIndex = -1;
+// Display YouTube search results
+function displayYouTubeResults(query) {
+    const dropdown = document.getElementById('songDropdown');
+    youtubeSelectedIndex = -1;
 
-    if (results.length === 0) {
+    if (youtubeResults.length === 0) {
         dropdown.innerHTML = `
             <div class="autocomplete-no-results">
-                <i class="fas fa-search"></i>
-                Không tìm thấy bài hát phù hợp
+                <i class="fab fa-youtube"></i>
+                Không tìm thấy video nào
             </div>
         `;
     } else {
-        dropdown.innerHTML = results.map((song, index) => `
-            <div class="autocomplete-item" data-index="${index}" data-song="${escapeHtml(song.name)}" data-artist="${escapeHtml(song.artist)}">
-                <span class="autocomplete-item-icon">🎵</span>
-                <div class="autocomplete-item-content">
-                    <div class="autocomplete-song">${highlightMatch(song.name, query)}</div>
-                    <div class="autocomplete-artist">${song.artist}</div>
+        dropdown.innerHTML = youtubeResults.map((video, index) => `
+            <div class="youtube-item" data-index="${index}" data-title="${escapeHtml(video.title)}" data-author="${escapeHtml(video.author)}" data-video-id="${video.videoId}">
+                <img class="youtube-thumb" src="${video.thumbnail}" alt="thumbnail" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 120 90%22><rect fill=%22%23f0f0f0%22 width=%22120%22 height=%2290%22/><text x=%2260%22 y=%2250%22 text-anchor=%22middle%22 fill=%22%23999%22 font-size=%2212%22>🎵</text></svg>'">
+                <div class="youtube-info">
+                    <div class="youtube-title">${highlightText(video.title, query)}</div>
+                    <div class="youtube-channel">${video.author}</div>
                 </div>
+                ${video.duration ? `<span class="youtube-duration">${video.duration}</span>` : ''}
             </div>
         `).join('');
 
         // Add click handlers
-        dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+        dropdown.querySelectorAll('.youtube-item').forEach(item => {
             item.addEventListener('click', function() {
-                const song = this.dataset.song;
-                const artist = this.dataset.artist;
-                selectSong(song, artist);
+                const title = this.dataset.title;
+                const author = this.dataset.author;
+                const videoId = this.dataset.videoId;
+                selectYouTubeVideo(title, author, videoId);
             });
         });
     }
@@ -623,150 +578,100 @@ function showSongDropdown(query) {
     dropdown.classList.add('active');
 }
 
-// Show artist dropdown
-function showArtistDropdown(query) {
-    const dropdown = document.getElementById('artistDropdown');
-    let results;
-
-    if (query.length === 0) {
-        results = popularArtists.slice(0, 8);
-    } else {
-        results = popularArtists.filter(artist =>
-            artist.toLowerCase().includes(query.toLowerCase())
-        ).slice(0, 8);
-    }
-
-    artistResults = results;
-    artistSelectedIndex = -1;
-
-    if (results.length === 0) {
-        dropdown.innerHTML = `
-            <div class="autocomplete-no-results">
-                <i class="fas fa-user"></i>
-                Không tìm thấy ca sĩ phù hợp
-            </div>
-        `;
-    } else {
-        dropdown.innerHTML = results.map((artist, index) => `
-            <div class="autocomplete-item" data-index="${index}" data-artist="${escapeHtml(artist)}">
-                <span class="autocomplete-item-icon">🎤</span>
-                <div class="autocomplete-item-content">
-                    <div class="autocomplete-song">${highlightMatch(artist, query)}</div>
-                </div>
-            </div>
-        `).join('');
-
-        dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
-            item.addEventListener('click', function() {
-                selectArtist(this.dataset.artist);
-            });
-        });
-    }
-
-    dropdown.classList.add('active');
-}
-
-// Handle keyboard navigation for song input
-function handleSongKeydown(e) {
+// Show search error
+function showSearchError() {
     const dropdown = document.getElementById('songDropdown');
-    const items = dropdown.querySelectorAll('.autocomplete-item');
+    dropdown.innerHTML = `
+        <div class="autocomplete-no-results">
+            <i class="fas fa-exclamation-triangle"></i>
+            Không thể tìm kiếm. Thử lại sau!
+        </div>
+    `;
+    dropdown.classList.add('active');
+}
 
-    if (!dropdown.classList.contains('active')) return;
+// Handle keyboard navigation
+function handleYouTubeKeydown(e) {
+    const dropdown = document.getElementById('songDropdown');
+    const items = dropdown.querySelectorAll('.youtube-item');
+
+    if (!dropdown.classList.contains('active') || items.length === 0) return;
 
     if (e.key === 'ArrowDown') {
         e.preventDefault();
-        songSelectedIndex = Math.min(songSelectedIndex + 1, items.length - 1);
-        updateSongSelection(items);
+        youtubeSelectedIndex = Math.min(youtubeSelectedIndex + 1, items.length - 1);
+        updateYouTubeSelection(items);
     } else if (e.key === 'ArrowUp') {
         e.preventDefault();
-        songSelectedIndex = Math.max(songSelectedIndex - 1, -1);
-        updateSongSelection(items);
+        youtubeSelectedIndex = Math.max(youtubeSelectedIndex - 1, -1);
+        updateYouTubeSelection(items);
     } else if (e.key === 'Enter') {
         e.preventDefault();
-        if (songSelectedIndex >= 0 && songResults[songSelectedIndex]) {
-            const song = songResults[songSelectedIndex];
-            selectSong(song.name, song.artist);
+        if (youtubeSelectedIndex >= 0 && youtubeResults[youtubeSelectedIndex]) {
+            const video = youtubeResults[youtubeSelectedIndex];
+            selectYouTubeVideo(video.title, video.author, video.videoId);
         }
     } else if (e.key === 'Escape') {
         hideSongDropdown();
     }
 }
 
-// Handle keyboard navigation for artist input
-function handleArtistKeydown(e) {
-    const dropdown = document.getElementById('artistDropdown');
-    const items = dropdown.querySelectorAll('.autocomplete-item');
-
-    if (!dropdown.classList.contains('active')) return;
-
-    if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        artistSelectedIndex = Math.min(artistSelectedIndex + 1, items.length - 1);
-        updateArtistSelection(items);
-    } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        artistSelectedIndex = Math.max(artistSelectedIndex - 1, -1);
-        updateArtistSelection(items);
-    } else if (e.key === 'Enter') {
-        e.preventDefault();
-        if (artistSelectedIndex >= 0 && artistResults[artistSelectedIndex]) {
-            selectArtist(artistResults[artistSelectedIndex]);
-        }
-    } else if (e.key === 'Escape') {
-        hideArtistDropdown();
-    }
-}
-
-// Update song selection highlight
-function updateSongSelection(items) {
+// Update selection highlight
+function updateYouTubeSelection(items) {
     items.forEach((item, index) => {
-        item.classList.toggle('selected', index === songSelectedIndex);
+        item.classList.toggle('selected', index === youtubeSelectedIndex);
     });
-    if (songSelectedIndex >= 0 && items[songSelectedIndex]) {
-        items[songSelectedIndex].scrollIntoView({ block: 'nearest' });
+    if (youtubeSelectedIndex >= 0 && items[youtubeSelectedIndex]) {
+        items[youtubeSelectedIndex].scrollIntoView({ block: 'nearest' });
     }
 }
 
-// Update artist selection highlight
-function updateArtistSelection(items) {
-    items.forEach((item, index) => {
-        item.classList.toggle('selected', index === artistSelectedIndex);
-    });
-    if (artistSelectedIndex >= 0 && items[artistSelectedIndex]) {
-        items[artistSelectedIndex].scrollIntoView({ block: 'nearest' });
-    }
-}
+// Select a YouTube video
+function selectYouTubeVideo(title, author, videoId) {
+    // Extract song name (remove common suffixes like "(Official MV)", "[MV]" etc.)
+    let songName = title
+        .replace(/\(.*?\)/g, '')
+        .replace(/\[.*?\]/g, '')
+        .replace(/\|.*$/g, '')
+        .replace(/ft\.|feat\.|ft$/gi, '')
+        .replace(/\s+/g, ' ')
+        .trim();
 
-// Select a song from dropdown
-function selectSong(songName, artistName) {
+    // Clean up author name
+    let artistName = author
+        .replace('- Topic', '')
+        .replace('VEVO', '')
+        .replace('Official', '')
+        .replace('Music', '')
+        .trim();
+
+    // Set values
     document.getElementById('songName').value = songName;
     document.getElementById('artist').value = artistName;
+
     hideSongDropdown();
-    // Focus artist input next
+
+    // Focus artist input
     document.getElementById('artist').focus();
 }
 
-// Select an artist from dropdown
-function selectArtist(artistName) {
-    document.getElementById('artist').value = artistName;
-    hideArtistDropdown();
-}
-
-// Hide dropdowns
+// Hide dropdown
 function hideSongDropdown() {
     const dropdown = document.getElementById('songDropdown');
     dropdown.classList.remove('active');
-    songSelectedIndex = -1;
+    youtubeSelectedIndex = -1;
 }
 
-function hideArtistDropdown() {
-    const dropdown = document.getElementById('artistDropdown');
-    dropdown.classList.remove('active');
-    artistSelectedIndex = -1;
+// Format duration (seconds to MM:SS)
+function formatDuration(seconds) {
+    if (!seconds) return '';
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
 }
 
 // Highlight matching text
-function highlightMatch(text, query) {
+function highlightText(text, query) {
     if (!query) return escapeHtml(text);
     const regex = new RegExp(`(${escapeRegex(query)})`, 'gi');
     return escapeHtml(text).replace(regex, '<span class="autocomplete-item-highlight">$1</span>');
@@ -781,5 +686,5 @@ function escapeRegex(string) {
 document.addEventListener('DOMContentLoaded', function() {
     createParticles();
     loadStats();
-    initAutocomplete();
+    initYouTubeSearch();
 });

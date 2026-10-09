@@ -678,6 +678,111 @@ body {
     display: block;
 }
 
+/* YouTube Search Dropdown */
+.youtube-search-dropdown {
+    border-color: #ff0000;
+}
+
+.youtube-search-dropdown .youtube-search-hint {
+    padding: 20px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.youtube-search-dropdown .youtube-search-hint i {
+    color: #ff0000;
+    margin-right: 8px;
+    animation: pulse 1s infinite;
+}
+
+.youtube-search-dropdown .youtube-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.youtube-search-dropdown .youtube-item:last-child {
+    border-bottom: none;
+}
+
+.youtube-search-dropdown .youtube-item:hover,
+.youtube-search-dropdown .youtube-item.selected {
+    background: #fff1f1;
+}
+
+.youtube-search-dropdown .youtube-thumb {
+    width: 80px;
+    height: 45px;
+    border-radius: 6px;
+    object-fit: cover;
+    background: #f0f0f0;
+    flex-shrink: 0;
+}
+
+.youtube-search-dropdown .youtube-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.youtube-search-dropdown .youtube-title {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-dark);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.3;
+}
+
+.youtube-search-dropdown .youtube-channel {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.youtube-search-dropdown .youtube-duration {
+    font-size: 11px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    position: absolute;
+    bottom: 16px;
+    right: 20px;
+}
+
+.youtube-search-dropdown .youtube-item {
+    position: relative;
+}
+
+.youtube-search-dropdown .youtube-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+    color: var(--text-muted);
+}
+
+.youtube-search-dropdown .youtube-loading i {
+    color: #ff0000;
+}
+
+.youtube-hint {
+    color: #ff0000;
+}
+
+.youtube-hint i {
+    color: #ff0000;
+    margin-right: 4px;
+}
+
 /* Submit Button */
 .submit-btn {
     width: 100%;
